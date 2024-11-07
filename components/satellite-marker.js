@@ -4,7 +4,7 @@ import { Alert } from "react-native";
 const SatelliteMarker = ({ satellite }) => {
   const handleMarkerPress = () => {
     Alert.alert(
-      `Altura: ${satellite.satlatitude} km, Velocidad: ${satellite.satlongitude} km/s`
+      `Latitud: ${satellite.satlatitude} km, Longitud: ${satellite.satlongitude}`
     );
   };
 

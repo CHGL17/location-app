@@ -15,10 +15,8 @@ const satelliteList = [
   { key: 5, name: "UNAMSAT", value: 24305 },
 ];
 
-const getDistanciaMetros = (lat1, lon1, lat2, lon2) => {
-  rad = function (x) {
-    return (x * Math.PI) / 180;
-  };
+const getDistancia = (lat1, lon1, lat2, lon2) => {
+  rad = (x) => (x * Math.PI) / 180;
   var R = 6378.137;
   var dLat = rad(lat2 - lat1);
   var dLong = rad(lon2 - lon1);
@@ -29,7 +27,6 @@ const getDistanciaMetros = (lat1, lon1, lat2, lon2) => {
       Math.sin(dLong / 2) *
       Math.sin(dLong / 2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
   var d = R * c;
   return d;
 };
@@ -72,7 +69,7 @@ const App = () => {
           <Button title="Reintentar" onPress={requestLocationPermission} />
         </View>
       )}
-      {loading ? (
+      {loading && !error ? (
         <View style={{ flex: 1 }}>
           <View
             style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
@@ -85,7 +82,7 @@ const App = () => {
           <View style={{ flex: 1 }}>
             <Text style={{ alignSelf: "center" }}>
               {data.info.satname}:
-              {getDistanciaMetros(
+              {getDistancia(
                 location.coords.latitude,
                 location.coords.longitude,
                 data.positions[0].satlatitude,
