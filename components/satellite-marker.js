@@ -1,10 +1,10 @@
-import { Marker } from "react-native-maps";
+import { Marker, Polyline } from "react-native-maps";
 import { Alert } from "react-native";
 
 const SatelliteMarker = ({ satellite }) => {
   const handleMarkerPress = () => {
     Alert.alert(
-      `Nombre: ${satellite.satname}, Altura: ${satellite.satlatitude} km, Velocidad: ${satellite.satlongitude} km/s`
+      `Altura: ${satellite.satlatitude} km, Velocidad: ${satellite.satlongitude} km/s`
     );
   };
 
@@ -21,4 +21,19 @@ const SatelliteMarker = ({ satellite }) => {
   );
 };
 
-export default SatelliteMarker;
+const Distance = ({ location, satellite }) => {
+  const coordinates = [
+    {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    },
+    {
+      latitude: satellite.satlatitude,
+      longitude: satellite.satlongitude,
+    },
+  ];
+
+  return <Polyline coordinates={coordinates} />;
+};
+
+export { SatelliteMarker, Distance };

@@ -2,9 +2,18 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View, Button } from "react-native";
 import Map from "./components/Map";
 import UserMarker from "./components/user-marker";
-import SatelliteMarker from "./components/satellite-marker";
+import { Distance, SatelliteMarker } from "./components/satellite-marker";
 
 import { UseUserLocation } from "./hooks/use-user-location";
+import { Picker } from "@react-native-picker/picker";
+
+const satelliteList = [
+  { key: 1, name: "ISS", value: 25544 },
+  { key: 2, name: "Hubble", value: 20580 },
+  { key: 3, name: "Starlink", value: 44925 },
+  { key: 4, name: "SKY MEXICO-1", value: 40664 },
+  { key: 5, name: "UNAMSAT", value: 24305 },
+];
 
 const getDistanciaMetros = (lat1, lon1, lat2, lon2) => {
   rad = function (x) {
@@ -29,23 +38,34 @@ const App = () => {
   const [location, error, requestLocationPermission] = UseUserLocation();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
+  const [satellite, setSatellite] = useState(25544);
 
   useEffect(() => {
     if (location && !error) {
-      (async () => {
+      const interval = setInterval(async () => {
         const response = await fetch(
-          `https://api.n2yo.com/rest/v1/satellite/positions/25544/${location.coords.latitude}/${location.coords.longitude}/${location.coords.altitude}/1/&apiKey=${process.env.EXPO_PUBLIC_API_KEY}`
+          `https://api.n2yo.com/rest/v1/satellite/positions/${satellite}/${location.coords.latitude}/${location.coords.longitude}/${location.coords.altitude}/1/&apiKey=${process.env.EXPO_PUBLIC_API_KEY}`
         );
         const data = await response.json();
         setData(data);
-      })();
+      }, 5000);
       setLoading(false);
+      return () => clearInterval(interval);
     }
-  }, [location, error]);
+  }, [location, error, satellite]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SateliApp</Text>
+      <Picker selectedValue={satellite} onValueChange={setSatellite}>
+        {satelliteList.map((satellite) => (
+          <Picker.Item
+            key={satellite.key}
+            label={satellite.name}
+            value={satellite.value}
+          />
+        ))}
+      </Picker>
       {error && (
         <View style={{ alignItems: "center" }}>
           <Text style={styles.errorText}>{error}</Text>
@@ -75,9 +95,8 @@ const App = () => {
             </Text>
             <Map location={location}>
               <UserMarker location={location} />
-              {data.positions.map((satellite) => (
-                <SatelliteMarker key={data.info.satid} satellite={satellite} />
-              ))}
+              <SatelliteMarker satellite={data.positions[0]} />
+              <Distance location={location} satellite={data.positions[0]} />
             </Map>
           </View>
         )
