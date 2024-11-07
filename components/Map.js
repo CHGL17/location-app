@@ -8,8 +8,8 @@ const Map = ({ location, children }) => {
       initialRegion={{
         latitude: location.coords.latitude,
         longitude: location.coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+        latitudeDelta: 30,
+        longitudeDelta: 60,
       }}
     >
       {children}
